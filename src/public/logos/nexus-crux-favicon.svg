@@ -1,5 +1,5 @@
 <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-  <!-- Dark background for better visibility -->
+  <!-- Dark background -->
   <rect width="80" height="80" fill="#0A1A2F" rx="8"/>
   
   <!-- Connection lines (Nexus) -->

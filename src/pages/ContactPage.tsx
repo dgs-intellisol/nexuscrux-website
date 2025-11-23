@@ -1,67 +1,167 @@
 import { motion } from 'motion/react';
 import { SEO } from '../components/SEO';
-import { Mail, MapPin, Phone, Calendar } from 'lucide-react';
+import { Mail, MapPin, Phone, Calendar, CheckCircle, Handshake, FlaskConical } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { contactEmails } from '../config/socialMedia';
+import { projectId, publicAnonKey } from '../utils/supabase/info.tsx';
+import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 export function ContactPage() {
+  // Demo Request State
+  const [demoSubmitting, setDemoSubmitting] = useState(false);
+  const [demoSuccess, setDemoSuccess] = useState(false);
+  const [demoError, setDemoError] = useState<string | null>(null);
+  const demoFormRef = useRef<HTMLFormElement>(null);
+  
+  // Partner Inquiry State
+  const [partnerSubmitting, setPartnerSubmitting] = useState(false);
+  const [partnerSuccess, setPartnerSuccess] = useState(false);
+  const [partnerError, setPartnerError] = useState<string | null>(null);
+  const partnerFormRef = useRef<HTMLFormElement>(null);
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ContactPage",
     "mainEntity": {
       "@type": "Organization",
       "name": "Nexus Crux",
-      "email": "hello@nexuscrux.com",
+      "email": "hello@nexuscrux.io",
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "Sales",
-        "email": "hello@nexuscrux.com"
+        "email": "hello@nexuscrux.io"
       }
     }
   };
 
-  const handleDemoSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Demo Request Handler
+  const handleDemoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setDemoSubmitting(true);
+    setDemoError(null);
+    
     const formData = new FormData(e.currentTarget);
-    const name = formData.get('name');
-    const email = formData.get('email');
-    const company = formData.get('company');
-    const phone = formData.get('phone');
-    const companySize = formData.get('companySize');
-    const interest = formData.get('interest');
-    const preferredDate = formData.get('preferredDate');
-    const additionalInfo = formData.get('additionalInfo');
     
-    const subject = 'Demo Request - Nexus Crux';
-    const body = `Demo Request\n\nName: ${name}\nEmail: ${email}\nCompany: ${company}\nPhone: ${phone || 'Not provided'}\nCompany Size: ${companySize}\nInterested in: ${interest}\nPreferred Demo Date: ${preferredDate || 'Flexible'}\n\nAdditional Information:\n${additionalInfo || 'None'}`;
-    
-    window.location.href = `mailto:${contactEmails.sales}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      company: formData.get('company'),
+      phone: formData.get('phone') || null,
+      companySize: formData.get('companySize') || null,
+      interest: formData.get('interest') || null,
+      preferredDate: formData.get('preferredDate') || null,
+      additionalInfo: formData.get('additionalInfo') || null,
+    };
+
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-fa18f4aa/api/contact/demo`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Demo request failed:', data);
+        throw new Error(data.error || 'Failed to submit demo request');
+      }
+
+      console.log('Demo request submitted:', data.submissionId);
+      setDemoSuccess(true);
+      if (demoFormRef.current) {
+        demoFormRef.current.reset();
+      }
+    } catch (error) {
+      console.error('Error submitting demo request:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit request';
+      setDemoError(errorMessage);
+      
+      if (error instanceof Error && error.message.includes('demo_requests')) {
+        console.error('⚠️ DATABASE TABLE MISSING: Please create the demo_requests table.');
+        console.error('📖 See /DATABASE-TABLES-SETUP.md for instructions');
+      }
+    } finally {
+      setDemoSubmitting(false);
+    }
   };
 
-  const handleInquirySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Partner Inquiry Handler
+  const handlePartnerSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setPartnerSubmitting(true);
+    setPartnerError(null);
+    
     const formData = new FormData(e.currentTarget);
-    const name = formData.get('name');
-    const email = formData.get('email');
-    const company = formData.get('company');
-    const partnershipType = formData.get('partnershipType');
-    const message = formData.get('message');
     
-    const subject = 'Partnership Inquiry - Nexus Crux';
-    const body = `Partnership Inquiry\n\nName: ${name}\nEmail: ${email}\nCompany: ${company}\nPartnership Type: ${partnershipType}\n\nMessage:\n${message}`;
-    
-    window.location.href = `mailto:${contactEmails.sales}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      company: formData.get('company'),
+      phone: formData.get('phone') || null,
+      jobTitle: formData.get('jobTitle') || null,
+      companyWebsite: formData.get('companyWebsite') || null,
+      partnershipType: formData.get('partnershipType'),
+      message: formData.get('message'),
+      revenuePotential: formData.get('revenuePotential') || null,
+      geographicFocus: formData.get('geographicFocus') || null,
+    };
+
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-fa18f4aa/api/contact/partner`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Partner inquiry failed:', data);
+        throw new Error(data.error || 'Failed to submit partner inquiry');
+      }
+
+      console.log('Partner inquiry submitted:', data.submissionId);
+      setPartnerSuccess(true);
+      if (partnerFormRef.current) {
+        partnerFormRef.current.reset();
+      }
+    } catch (error) {
+      console.error('Error submitting partner inquiry:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit inquiry';
+      setPartnerError(errorMessage);
+      
+      if (error instanceof Error && error.message.includes('partner_inquiries')) {
+        console.error('⚠️ DATABASE TABLE MISSING: Please create the partner_inquiries table.');
+        console.error('📖 See /DATABASE-TABLES-SETUP.md for instructions');
+      }
+    } finally {
+      setPartnerSubmitting(false);
+    }
   };
 
   return (
     <div className="bg-white">
       <SEO 
         title="Contact Us - Schedule a Demo"
-        description="Get in touch with Nexus Crux. Schedule a demo, discuss pricing, or learn how our multi-tenant service bus platform can transform your operations."
-        keywords="contact, schedule demo, support, sales inquiry, book consultation"
+        description="Get in touch with Nexus Crux. Schedule a demo, request sandbox access, or explore partnership opportunities."
+        keywords="contact, schedule demo, sandbox, trial, partnership, support"
         structuredData={structuredData}
       />
       
@@ -81,122 +181,137 @@ export function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Forms */}
+      {/* Contact Forms - Grid of 2 */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
             {/* Demo Booking Form */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <div className="bg-gradient-to-br from-gray-50 to-white border border-[#0A1A2F]/10 rounded-2xl p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-lg flex items-center justify-center">
+              <div className="bg-gradient-to-br from-gray-50 to-white border border-[#0A1A2F]/10 rounded-2xl p-6 h-full flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-lg flex items-center justify-center flex-shrink-0">
                     <Calendar className="w-5 h-5 text-white" />
                   </div>
                   <h2 className="text-[#0A1A2F]">Book a Demo</h2>
                 </div>
-                <p className="text-[#0A1A2F]/60 mb-6">
-                  Schedule a personalized demo to see how Nexus Crux can transform your operations.
+                <p className="text-[#0A1A2F]/60 text-sm mb-4">
+                  See Nexus Crux in action with a personalized demo.
                 </p>
 
-                <form className="space-y-4" onSubmit={handleDemoSubmit}>
+                <form className="space-y-3 flex-grow flex flex-col" onSubmit={handleDemoSubmit} ref={demoFormRef}>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Full Name *</label>
-                    <Input type="text" placeholder="John Doe" name="name" required />
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Name *</label>
+                    <Input type="text" placeholder="John Doe" name="name" required disabled={demoSuccess} className="h-9" />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Work Email *</label>
-                    <Input type="email" placeholder="john@company.com" name="email" required />
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Email *</label>
+                    <Input type="email" placeholder="john@company.com" name="email" required disabled={demoSuccess} className="h-9" />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Company Name *</label>
-                    <Input type="text" placeholder="Your Company" name="company" required />
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Company *</label>
+                    <Input type="text" placeholder="Your Company" name="company" required disabled={demoSuccess} className="h-9" />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Phone Number</label>
-                    <Input type="tel" placeholder="+44 20 7946 0958" name="phone" />
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Phone</label>
+                    <Input type="tel" placeholder="+44 20 7946 0958" name="phone" disabled={demoSuccess} className="h-9" />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Company Size *</label>
-                    <Select name="companySize">
-                      <SelectTrigger>
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Company Size</label>
+                    <Select name="companySize" disabled={demoSuccess}>
+                      <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select size" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1-10">1-10 employees</SelectItem>
-                        <SelectItem value="11-50">11-50 employees</SelectItem>
-                        <SelectItem value="51-200">51-200 employees</SelectItem>
-                        <SelectItem value="201-1000">201-1,000 employees</SelectItem>
-                        <SelectItem value="1000+">1,000+ employees</SelectItem>
+                        <SelectItem value="1-10">1-10</SelectItem>
+                        <SelectItem value="11-50">11-50</SelectItem>
+                        <SelectItem value="51-200">51-200</SelectItem>
+                        <SelectItem value="201-1000">201-1,000</SelectItem>
+                        <SelectItem value="1000+">1,000+</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">I'm interested in...</label>
-                    <Select name="interest">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="tenant">Launching a new brand</SelectItem>
-                        <SelectItem value="contractor">Becoming a contractor</SelectItem>
-                        <SelectItem value="enterprise">Enterprise solution</SelectItem>
-                        <SelectItem value="partnership">Partnership opportunities</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Preferred Date</label>
+                    <Input type="date" name="preferredDate" disabled={demoSuccess} className="h-9" />
                   </div>
-                  <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Preferred Demo Date</label>
-                    <Input type="date" name="preferredDate" />
+                  <div className="flex-grow">
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Additional Info</label>
+                    <Textarea placeholder="Tell us..." rows={2} name="additionalInfo" disabled={demoSuccess} />
                   </div>
-                  <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Additional Information</label>
-                    <Textarea placeholder="Tell us about your needs..." rows={3} name="additionalInfo" />
-                  </div>
-                  <Button className="w-full bg-gradient-to-r from-[#2AD1C8] to-[#A6F750] text-[#0A1A2F] hover:opacity-90">
-                    Schedule Demo
-                  </Button>
+                  
+                  {demoSuccess ? (
+                    <div className="bg-gradient-to-br from-[#2AD1C8]/10 to-[#A6F750]/10 border border-[#2AD1C8]/30 rounded-lg p-3 mt-auto">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-5 h-5 text-[#2AD1C8] flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-[#0A1A2F]">Demo request submitted! We'll contact you shortly.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button 
+                      className="w-full bg-gradient-to-r from-[#2AD1C8] to-[#A6F750] text-[#0A1A2F] hover:opacity-90 mt-auto"
+                      disabled={demoSubmitting}
+                    >
+                      {demoSubmitting ? 'Submitting...' : 'Schedule Demo'}
+                    </Button>
+                  )}
+                  
+                  {demoError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <p className="text-sm text-red-600">{demoError}</p>
+                    </div>
+                  )}
                 </form>
               </div>
             </motion.div>
 
             {/* Partner Inquiry Form */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
             >
-              <div className="bg-gradient-to-br from-gray-50 to-white border border-[#0A1A2F]/10 rounded-2xl p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#A6F750] to-[#2AD1C8] rounded-lg flex items-center justify-center">
-                    <Mail className="w-5 h-5 text-white" />
+              <div className="bg-gradient-to-br from-gray-50 to-white border border-[#0A1A2F]/10 rounded-2xl p-6 h-full flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Handshake className="w-5 h-5 text-white" />
                   </div>
                   <h2 className="text-[#0A1A2F]">Partner Inquiry</h2>
                 </div>
-                <p className="text-[#0A1A2F]/60 mb-6">
-                  Interested in partnering with Nexus Crux? Let's explore opportunities together.
+                <p className="text-[#0A1A2F]/60 text-sm mb-4">
+                  Explore partnership opportunities with Nexus Crux.
                 </p>
 
-                <form className="space-y-4" onSubmit={handleInquirySubmit}>
+                <form className="space-y-3 flex-grow flex flex-col" onSubmit={handlePartnerSubmit} ref={partnerFormRef}>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Full Name *</label>
-                    <Input type="text" placeholder="Jane Smith" name="name" required />
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Name *</label>
+                    <Input type="text" placeholder="Alex Johnson" name="name" required disabled={partnerSuccess} className="h-9" />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Work Email *</label>
-                    <Input type="email" placeholder="jane@partner.com" name="email" required />
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Email *</label>
+                    <Input type="email" placeholder="alex@partner.com" name="email" required disabled={partnerSuccess} className="h-9" />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Company Name *</label>
-                    <Input type="text" placeholder="Partner Company" name="company" required />
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Company *</label>
+                    <Input type="text" placeholder="Partner Inc" name="company" required disabled={partnerSuccess} className="h-9" />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Partnership Type *</label>
-                    <Select name="partnershipType">
-                      <SelectTrigger>
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Phone</label>
+                    <Input type="tel" placeholder="+44 20 7946 0958" name="phone" disabled={partnerSuccess} className="h-9" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Company Website</label>
+                    <Input type="url" placeholder="https://..." name="companyWebsite" disabled={partnerSuccess} className="h-9" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Partnership Type *</label>
+                    <Select name="partnershipType" disabled={partnerSuccess}>
+                      <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -208,17 +323,63 @@ export function ContactPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <label className="block text-sm text-[#0A1A2F] mb-2">Message *</label>
-                    <Textarea placeholder="Tell us about your partnership idea..." rows={6} name="message" required />
+                  <div className="flex-grow">
+                    <label className="block text-sm text-[#0A1A2F] mb-1">Message *</label>
+                    <Textarea placeholder="Tell us about your partnership idea..." rows={2} name="message" required disabled={partnerSuccess} />
                   </div>
-                  <Button className="w-full bg-[#0A1A2F] text-white hover:bg-[#0A1A2F]/90">
-                    Send Inquiry
-                  </Button>
+                  
+                  {partnerSuccess ? (
+                    <div className="bg-gradient-to-br from-[#2AD1C8]/10 to-[#A6F750]/10 border border-[#2AD1C8]/30 rounded-lg p-3 mt-auto">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-5 h-5 text-[#2AD1C8] flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-[#0A1A2F]">Partner inquiry submitted! Our team will review and contact you soon.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button 
+                      className="w-full bg-gradient-to-r from-[#A6F750] to-[#2AD1C8] text-[#0A1A2F] hover:opacity-90 mt-auto"
+                      disabled={partnerSubmitting}
+                    >
+                      {partnerSubmitting ? 'Submitting...' : 'Send Inquiry'}
+                    </Button>
+                  )}
+                  
+                  {partnerError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <p className="text-sm text-red-600">{partnerError}</p>
+                    </div>
+                  )}
                 </form>
               </div>
             </motion.div>
+
           </div>
+        </div>
+      </section>
+
+      {/* Sandbox CTA */}
+      <section className="py-20 bg-gradient-to-br from-[#0A1A2F] to-[#0A1A2F]/90">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-2xl mb-6">
+              <FlaskConical className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-white mb-4">Try Before You Buy</h2>
+            <p className="text-white/80 mb-8 max-w-2xl mx-auto">
+              Get hands-on with our developer sandbox. Test integrations, explore APIs, and build proof-of-concepts with full platform access—completely free for 30 days.
+            </p>
+            <Button asChild className="bg-gradient-to-r from-[#2AD1C8] to-[#A6F750] text-[#0A1A2F] hover:opacity-90 text-lg px-8 py-6 h-auto">
+              <Link to="/sandbox">Request Sandbox Access</Link>
+            </Button>
+            <p className="text-white/60 text-sm mt-4">
+              No credit card required • 10,000 API calls • Full documentation
+            </p>
+          </motion.div>
         </div>
       </section>
 

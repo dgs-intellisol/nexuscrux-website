@@ -56,10 +56,20 @@ export function SEO({
     };
 
     // Favicons
-    updateLinkTag('icon', '/logos/nexus-crux-compact.svg', 'image/svg+xml');
+    updateLinkTag('icon', '/favicon.svg', 'image/svg+xml');
     updateLinkTag('apple-touch-icon', '/logos/nexus-crux-compact.svg');
-    updateLinkTag('icon', '/logos/nexus-crux-compact.svg', 'image/svg+xml', '32x32');
-    updateLinkTag('shortcut icon', '/logos/nexus-crux-compact.svg', 'image/svg+xml');
+    
+    // Manifest
+    const updateManifest = () => {
+      let manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
+      if (!manifestLink) {
+        manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        document.head.appendChild(manifestLink);
+      }
+      manifestLink.href = '/manifest.json';
+    };
+    updateManifest();
 
     // Standard meta tags
     updateMetaTag('description', description);

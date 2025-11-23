@@ -21,6 +21,11 @@ export function StripePaymentForm({
   const elements = useElements();
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  
+  // Check if we're in test mode by checking the publishable key
+  const isTestMode = typeof window !== 'undefined' && 
+    window.location.hostname.includes('localhost') || 
+    window.location.hostname.includes('127.0.0.1');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +52,15 @@ export function StripePaymentForm({
       });
 
       if (stripeError) {
-        setError(stripeError.message || 'Payment method creation failed');
-        onError(stripeError.message || 'Payment method creation failed');
+        // Enhanced error messaging for test mode
+        let errorMsg = stripeError.message || 'Payment method creation failed';
+        
+        if (stripeError.code === 'card_declined' && stripeError.decline_code === 'test_mode_live_card') {
+          errorMsg = '🧪 Test Mode: Please use test card 4242 4242 4242 4242 (any future expiry, any CVC)';
+        }
+        
+        setError(errorMsg);
+        onError(errorMsg);
         setProcessing(false);
         return;
       }
@@ -83,6 +95,19 @@ export function StripePaymentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Test Mode Notice */}
+      {isTestMode && (
+        <Alert className="bg-[#2AD1C8]/10 border-[#2AD1C8]/30 text-[#0A1A2F]">
+          <div className="flex items-start gap-2">
+            <span className="text-lg">🧪</span>
+            <div className="text-sm">
+              <strong>Test Mode:</strong> Use test card <code className="bg-white/50 px-1 rounded">4242 4242 4242 4242</code><br/>
+              Any future expiry (e.g., 12/34), any CVC (e.g., 123), any postal code
+            </div>
+          </div>
+        </Alert>
+      )}
+      
       <div className="border border-[#0A1A2F]/20 rounded-lg p-4 bg-white">
         <label className="block text-sm text-[#0A1A2F] mb-3">
           Card Details *

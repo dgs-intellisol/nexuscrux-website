@@ -1,4 +1,4 @@
-﻿// Stripe Configuration
+// Stripe Configuration
 // TODO: Replace with your actual Stripe publishable key from Stripe Dashboard
 
 /**
@@ -16,16 +16,16 @@ export const STRIPE_CONFIG = {
   // Price IDs from Stripe Dashboard
   priceIds: {
     starter: {
-      monthly: 'prod_TTZjnclkmePCyh',
-      annual: 'prod_TTZkdXj71Z1Y3g',
+      monthly: 'price_starter_monthly',
+      annual: 'price_starter_annual',
     },
     growth: {
-      monthly: 'prod_TTZmGqsfAO2ktz',
-      annual: 'prod_TTZnsq6BDn0UuM',
+      monthly: 'price_growth_monthly',
+      annual: 'price_growth_annual',
     },
     scale: {
-      monthly: 'prod_TTZppt59jhs8yy',
-      annual: 'prod_TTZpTInUYO604D',
+      monthly: 'price_scale_monthly',
+      annual: 'price_scale_annual',
     },
   },
 };

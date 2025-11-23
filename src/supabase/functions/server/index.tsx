@@ -3,6 +3,7 @@ import { cors } from "npm:hono/cors";
 import { logger } from "npm:hono/logger";
 import * as kv from "./kv_store.tsx";
 import subscriptions from "./subscriptions.ts";
+import contact from "./contact.ts";
 
 const app = new Hono();
 
@@ -28,5 +29,8 @@ app.get("/make-server-fa18f4aa/health", (c) => {
 
 // Mount subscriptions routes
 app.route("/make-server-fa18f4aa/api/subscriptions", subscriptions);
+
+// Mount contact routes
+app.route("/make-server-fa18f4aa/api/contact", contact);
 
 Deno.serve(app.fetch);

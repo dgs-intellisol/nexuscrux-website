@@ -1,5 +1,6 @@
 import { Hono } from 'npm:hono';
 import Stripe from 'npm:stripe@14.10.0';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const app = new Hono();
 
@@ -7,6 +8,12 @@ const app = new Hono();
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2024-11-20.acacia',
 });
+
+// Initialize Supabase client
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') || '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
+);
 
 // Create subscription endpoint
 app.post('/create', async (c) => {
@@ -86,6 +93,97 @@ app.post('/create', async (c) => {
     console.log(`   Trial: ${hasTrial ? '14 days' : 'No trial'}`);
     console.log(`   Customer: ${customer.id}`);
 
+    // === SAVE TO DATABASE ===
+    
+    // 1. Save customer to database
+    const { data: dbCustomer, error: customerError } = await supabase
+      .from('customers')
+      .insert({
+        stripe_customer_id: customer.id,
+        email: customerInfo.email,
+        name: customerInfo.name,
+        phone: customerInfo.phone || null,
+        company: customerInfo.company || null,
+        status: 'active',
+        stripe_created_at: new Date(customer.created * 1000).toISOString(),
+      })
+      .select()
+      .single();
+
+    if (customerError) {
+      console.error('❌ Error saving customer to database:', customerError);
+      // Continue anyway - Stripe subscription is created
+    } else {
+      console.log(`✅ Customer saved to database: ${dbCustomer.id}`);
+    }
+
+    // 2. Calculate subscription amount based on plan and billing cycle
+    const planAmounts: Record<string, { monthly: number; annual: number }> = {
+      starter: { monthly: 399, annual: 319.20 },
+      growth: { monthly: 1199, annual: 959.20 },
+      scale: { monthly: 2899, annual: 2319.20 },
+    };
+    
+    const amount = planAmounts[planName.toLowerCase()]?.[billingCycle.toLowerCase() as 'monthly' | 'annual'] || 0;
+
+    // 3. Save subscription to database
+    const { data: dbSubscription, error: subscriptionError } = await supabase
+      .from('subscriptions')
+      .insert({
+        stripe_subscription_id: subscription.id,
+        stripe_customer_id: customer.id,
+        stripe_price_id: priceId,
+        customer_id: dbCustomer?.id || null,
+        plan_name: planName.toLowerCase(),
+        billing_cycle: billingCycle.toLowerCase(),
+        amount: amount,
+        currency: 'gbp',
+        status: subscription.status,
+        has_trial: hasTrial,
+        trial_start: hasTrial && subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+        trial_end: hasTrial && subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+        current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+        cancel_at_period_end: subscription.cancel_at_period_end,
+        signup_source: hasTrial ? 'trial' : 'direct',
+        additional_info: customerInfo.additionalInfo || null,
+        stripe_created_at: new Date(subscription.created * 1000).toISOString(),
+      })
+      .select()
+      .single();
+
+    if (subscriptionError) {
+      console.error('❌ Error saving subscription to database:', subscriptionError);
+      // Continue anyway - Stripe subscription is created
+    } else {
+      console.log(`✅ Subscription saved to database: ${dbSubscription.id}`);
+    }
+
+    // 4. Log subscription event
+    if (dbSubscription && dbCustomer) {
+      const { error: eventError } = await supabase
+        .from('subscription_events')
+        .insert({
+          subscription_id: dbSubscription.id,
+          customer_id: dbCustomer.id,
+          stripe_subscription_id: subscription.id,
+          event_type: 'subscription_created',
+          description: `Customer signed up for ${planName} plan (${billingCycle})${hasTrial ? ' with 14-day trial' : ''}`,
+          metadata: {
+            plan: planName,
+            billing_cycle: billingCycle,
+            has_trial: hasTrial,
+            amount: amount,
+          },
+        });
+
+      if (eventError) {
+        console.error('❌ Error logging subscription event:', eventError);
+      } else {
+        console.log('✅ Subscription event logged');
+      }
+    }
+
     return c.json({
       success: true,
       subscriptionId: subscription.id,
@@ -99,12 +197,38 @@ app.post('/create', async (c) => {
   } catch (error) {
     console.error('❌ Error creating subscription:', error);
     
+    // Enhanced error messaging
+    let errorMessage = 'Unknown error occurred';
+    let statusCode = 500;
+    
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      
+      // Check for specific Stripe errors
+      const stripeError = error as any;
+      
+      if (stripeError.type === 'StripeCardError') {
+        statusCode = 402; // Payment Required
+        
+        if (stripeError.code === 'card_declined' && stripeError.decline_code === 'test_mode_live_card') {
+          errorMessage = '🧪 Test Mode: Please use Stripe test card 4242 4242 4242 4242 (any future expiry, any CVC, any postal code). Real cards cannot be used in test mode.';
+        } else if (stripeError.code === 'card_declined') {
+          errorMessage = `Card declined: ${stripeError.message}`;
+        } else {
+          errorMessage = stripeError.message;
+        }
+      } else if (stripeError.type === 'StripeInvalidRequestError') {
+        statusCode = 400;
+        errorMessage = `Invalid request: ${stripeError.message}`;
+      }
+    }
+    
     return c.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error: errorMessage,
       },
-      { status: 500 }
+      { status: statusCode }
     );
   }
 });

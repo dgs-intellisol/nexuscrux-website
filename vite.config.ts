@@ -2,9 +2,68 @@
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react-swc';
   import path from 'path';
+  import { copyFileSync, existsSync, mkdirSync } from 'fs';
 
   export default defineConfig({
-    plugins: [react()],
+    plugins: [
+      react(),
+      // Plugin to copy logos folder and other assets to build folder
+      {
+        name: 'copy-build-assets',
+        closeBundle() {
+          try {
+            // Copy .htaccess
+            if (existsSync(path.resolve(__dirname, '.htaccess'))) {
+              copyFileSync(
+                path.resolve(__dirname, '.htaccess'),
+                path.resolve(__dirname, 'build/.htaccess')
+              );
+              console.log('✓ .htaccess copied to build folder');
+            }
+
+            // Copy logos folder
+            const logosSrc = path.resolve(__dirname, 'src/public/logos');
+            const logosDest = path.resolve(__dirname, 'build/logos');
+            
+            if (existsSync(logosSrc)) {
+              // Create logos directory in build
+              if (!existsSync(logosDest)) {
+                mkdirSync(logosDest, { recursive: true });
+              }
+
+              // Copy all SVG files from logos folder
+              const fs = require('fs');
+              const files = fs.readdirSync(logosSrc);
+              let copied = 0;
+              
+              files.forEach((file: string) => {
+                if (file.endsWith('.svg')) {
+                  const srcFile = path.join(logosSrc, file);
+                  const destFile = path.join(logosDest, file);
+                  copyFileSync(srcFile, destFile);
+                  copied++;
+                }
+              });
+
+              if (copied > 0) {
+                console.log(`✓ ${copied} logo file(s) copied to build/logos/`);
+              }
+            }
+
+            // Copy favicon.svg if it exists
+            const faviconSrc = path.resolve(__dirname, 'src/public/favicon.svg');
+            const faviconDest = path.resolve(__dirname, 'build/favicon.svg');
+            if (existsSync(faviconSrc)) {
+              copyFileSync(faviconSrc, faviconDest);
+              console.log('✓ favicon.svg copied to build folder');
+            }
+          } catch (error) {
+            console.warn('⚠ Could not copy build assets:', error);
+          }
+        },
+      },
+    ],
+    publicDir: 'src/public', // Vite will copy files from src/public to build root
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -21,6 +80,7 @@
         'embla-carousel-react@8.6.0': 'embla-carousel-react',
         'cmdk@1.1.1': 'cmdk',
         'class-variance-authority@0.7.1': 'class-variance-authority',
+        '@supabase/supabase-js@2': '@supabase/supabase-js',
         '@radix-ui/react-tooltip@1.1.8': '@radix-ui/react-tooltip',
         '@radix-ui/react-toggle@1.1.2': '@radix-ui/react-toggle',
         '@radix-ui/react-toggle-group@1.1.2': '@radix-ui/react-toggle-group',
@@ -48,6 +108,7 @@
         '@radix-ui/react-alert-dialog@1.1.6': '@radix-ui/react-alert-dialog',
         '@radix-ui/react-accordion@1.2.3': '@radix-ui/react-accordion',
         '@jsr/supabase__supabase-js@2.49.8': '@jsr/supabase__supabase-js',
+        '@jsr/supabase__supabase-js@2': '@jsr/supabase__supabase-js',
         '@': path.resolve(__dirname, './src'),
       },
     },

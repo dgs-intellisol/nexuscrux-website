@@ -1,14 +1,83 @@
 import { motion } from 'motion/react';
 import { SEO } from '../components/SEO';
-import { Book, Code, Zap, Lock, Puzzle, GitBranch } from 'lucide-react';
+import { Book, Code, Zap, Lock, Puzzle, GitBranch, CheckCircle, FlaskConical } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
 import { contactEmails } from '../config/socialMedia';
+import { projectId, publicAnonKey } from '../utils/supabase/info.tsx';
+import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 export function DocumentationPage() {
+  // Sandbox Request State
+  const [sandboxSubmitting, setSandboxSubmitting] = useState(false);
+  const [sandboxSuccess, setSandboxSuccess] = useState(false);
+  const [sandboxError, setSandboxError] = useState<string | null>(null);
+  const sandboxFormRef = useRef<HTMLFormElement>(null);
+
+  // Sandbox Request Handler
+  const handleSandboxSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSandboxSubmitting(true);
+    setSandboxError(null);
+    
+    const formData = new FormData(e.currentTarget);
+    
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      company: formData.get('company'),
+      useCase: formData.get('useCase'),
+    };
+
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-fa18f4aa/api/contact/sandbox`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Sandbox request failed:', data);
+        throw new Error(data.error || 'Failed to submit sandbox request');
+      }
+
+      console.log('Sandbox request submitted:', data.submissionId);
+      setSandboxSuccess(true);
+      if (sandboxFormRef.current) {
+        sandboxFormRef.current.reset();
+      }
+    } catch (error) {
+      console.error('Error submitting sandbox request:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit request';
+      setSandboxError(errorMessage);
+      
+      if (error instanceof Error && error.message.includes('sandbox_requests')) {
+        console.error('⚠️ DATABASE TABLE MISSING: Please create the sandbox_requests table.');
+        console.error('📖 See /DATABASE-TABLES-SETUP.md for instructions');
+      }
+    } finally {
+      setSandboxSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-white">
+      <SEO 
+        title="Developer Documentation - API & Integration Guides"
+        description="Comprehensive developer documentation for Nexus Crux. API references, webhooks, SDKs, and integration guides. Request sandbox access to test integrations."
+        keywords="API documentation, developer docs, REST API, webhooks, integration, sandbox, SDK"
+      />
+      
       {/* Hero */}
       <section className="bg-[#0A1A2F] text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -299,53 +368,22 @@ export function DocumentationPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center"
           >
-            <h2 className="text-[#0A1A2F] mb-4">Request Sandbox Access</h2>
-            <p className="text-[#0A1A2F]/60">
-              Get started with our developer sandbox to test integrations risk-free.
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-2xl mb-6">
+              <FlaskConical className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-[#0A1A2F] mb-4">Ready to Start Building?</h2>
+            <p className="text-[#0A1A2F]/60 mb-8 max-w-2xl mx-auto">
+              Get hands-on access to our developer sandbox. Test integrations, explore APIs, and build proof-of-concepts in a risk-free environment.
+            </p>
+            <Button asChild className="bg-gradient-to-r from-[#2AD1C8] to-[#A6F750] text-[#0A1A2F] hover:opacity-90">
+              <Link to="/sandbox">Request Sandbox Access</Link>
+            </Button>
+            <p className="text-sm text-[#0A1A2F]/50 mt-4">
+              Free 30-day access • Full API access • No credit card required
             </p>
           </motion.div>
-
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-8"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const name = formData.get('name');
-              const email = formData.get('email');
-              const company = formData.get('company');
-              const useCase = formData.get('useCase');
-              const subject = 'Sandbox Access Request';
-              const body = `Name: ${name}\nEmail: ${email}\nCompany: ${company}\n\nUse Case:\n${useCase}`;
-              window.location.href = `mailto:${contactEmails.sales}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            }}
-          >
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm text-[#0A1A2F] mb-2">Name</label>
-                <Input type="text" name="name" placeholder="John Doe" required />
-              </div>
-              <div>
-                <label className="block text-sm text-[#0A1A2F] mb-2">Email</label>
-                <Input type="email" name="email" placeholder="john@company.com" required />
-              </div>
-              <div>
-                <label className="block text-sm text-[#0A1A2F] mb-2">Company</label>
-                <Input type="text" name="company" placeholder="Your Company" required />
-              </div>
-              <div>
-                <label className="block text-sm text-[#0A1A2F] mb-2">Use Case</label>
-                <Textarea name="useCase" placeholder="Briefly describe what you'd like to build..." rows={4} required />
-              </div>
-              <Button type="submit" className="w-full bg-gradient-to-r from-[#2AD1C8] to-[#A6F750] text-[#0A1A2F] hover:opacity-90">
-                Request Sandbox Access
-              </Button>
-            </div>
-          </motion.form>
         </div>
       </section>
     </div>
