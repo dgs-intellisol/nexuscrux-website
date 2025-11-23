@@ -3,6 +3,9 @@ import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { Check, ArrowRight } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { TrialSignupDialog } from '../components/TrialSignupDialog';
+import { SubscribeDialog } from '../components/SubscribeDialog';
 
 export function PricingPage() {
   const structuredData = {
@@ -34,6 +37,22 @@ export function PricingPage() {
   };
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [trialDialogOpen, setTrialDialogOpen] = useState(false);
+  const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState('');
+
+  const handleTrialClick = (planName: string, price: string) => {
+    setSelectedPlan(planName);
+    setSelectedPrice(price);
+    setTrialDialogOpen(true);
+  };
+
+  const handleSubscribeClick = (planName: string, price: string) => {
+    setSelectedPlan(planName);
+    setSelectedPrice(price);
+    setSubscribeDialogOpen(true);
+  };
 
   const tiers = [
     {
@@ -252,16 +271,24 @@ export function PricingPage() {
                     {tier.cta}
                   </Link>
                 ) : (
-                  <Link
-                    to="/contact"
-                    className={`w-full py-3 rounded-lg text-center transition-all ${
-                      tier.popular
-                        ? 'bg-gradient-to-r from-[#2AD1C8] to-[#A6F750] text-[#0A1A2F] hover:opacity-90'
-                        : 'bg-[#0A1A2F] text-white hover:bg-[#0A1A2F]/90'
-                    }`}
-                  >
-                    {tier.cta}
-                  </Link>
+                  <div className="space-y-2">
+                    <Button
+                      onClick={() => handleTrialClick(tier.name, tier.monthlyPrice)}
+                      className={`w-full py-3 rounded-lg text-center transition-all ${
+                        tier.popular
+                          ? 'bg-gradient-to-r from-[#2AD1C8] to-[#A6F750] text-[#0A1A2F] hover:opacity-90'
+                          : 'bg-[#0A1A2F] text-white hover:bg-[#0A1A2F]/90'
+                      }`}
+                    >
+                      Start 14-Day Free Trial
+                    </Button>
+                    <button
+                      onClick={() => handleSubscribeClick(tier.name, tier.monthlyPrice)}
+                      className="w-full py-2 text-center text-sm text-[#0A1A2F]/60 hover:text-[#2AD1C8] transition-colors"
+                    >
+                      or Subscribe Now →
+                    </button>
+                  </div>
                 )}
               </motion.div>
             ))}
@@ -413,6 +440,24 @@ export function PricingPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Trial Dialog */}
+      <TrialSignupDialog
+        open={trialDialogOpen}
+        onOpenChange={setTrialDialogOpen}
+        selectedPlan={selectedPlan}
+        price={selectedPrice}
+        billingCycle={billingCycle}
+      />
+
+      {/* Subscribe Dialog */}
+      <SubscribeDialog
+        open={subscribeDialogOpen}
+        onOpenChange={setSubscribeDialogOpen}
+        selectedPlan={selectedPlan}
+        price={selectedPrice}
+        billingCycle={billingCycle}
+      />
     </div>
   );
 }

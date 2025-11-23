@@ -1,7 +1,7 @@
 # PowerShell deployment script for Hostinger
 # This script builds the project and prepares it for upload
 
-Write-Host "🚀 Building Nexus Crux website for production..." -ForegroundColor Cyan
+Write-Host "🚀 Nexus Crux marketing website for production..." -ForegroundColor Cyan
 
 # Build the project
 npm run build
@@ -15,6 +15,30 @@ if ($LASTEXITCODE -ne 0) {
 if (Test-Path ".htaccess") {
     Copy-Item ".htaccess" -Destination "build\.htaccess" -Force
     Write-Host "✓ .htaccess copied to build folder" -ForegroundColor Green
+}
+
+# Copy favicon files if they exist in public folder (check both public/ and src/public/)
+$faviconFiles = @('favicon.ico', 'favicon.svg', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png')
+$faviconsCopied = 0
+
+foreach ($file in $faviconFiles) {
+    $srcPath1 = "public\$file"
+    $srcPath2 = "src\public\$file"
+    $destPath = "build\$file"
+    
+    if (Test-Path $srcPath1) {
+        Copy-Item $srcPath1 -Destination $destPath -Force
+        $faviconsCopied++
+    } elseif (Test-Path $srcPath2) {
+        Copy-Item $srcPath2 -Destination $destPath -Force
+        $faviconsCopied++
+    }
+}
+
+if ($faviconsCopied -gt 0) {
+    Write-Host "✓ $faviconsCopied favicon file(s) copied to build folder" -ForegroundColor Green
+} else {
+    Write-Host "ℹ No favicon files found in public folder (using logo SVG as favicon)" -ForegroundColor Yellow
 }
 
 Write-Host ""

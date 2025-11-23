@@ -5,10 +5,13 @@
   RewriteEngine On
   RewriteBase /
 
-  # Handle Angular and React Router
-  # Don't rewrite files or directories
+  # Don't rewrite if the request is for a file that exists
   RewriteCond %{REQUEST_FILENAME} !-f
+  # Don't rewrite if the request is for a directory that exists
   RewriteCond %{REQUEST_FILENAME} !-d
+  # Don't rewrite asset files (CSS, JS, images, etc.)
+  RewriteCond %{REQUEST_URI} !^/assets/
+  RewriteCond %{REQUEST_URI} !\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ [NC]
   
   # Rewrite everything else to index.html to allow client-side routing
   RewriteRule ^ index.html [L]

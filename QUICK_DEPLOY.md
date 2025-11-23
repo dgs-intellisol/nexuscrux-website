@@ -46,6 +46,18 @@ public_html/
 └── (other files)
 ```
 
+## Updating Your Site
+
+**📖 See [UPDATE_SITE.md](./UPDATE_SITE.md) for complete update guide**
+
+Quick update:
+1. Make changes locally
+2. `npm run build`
+3. Upload new files to Hostinger (replace old ones)
+4. Clear cache (Ctrl+F5)
+
 ## Need Help?
-See `DEPLOYMENT.md` for detailed instructions.
+- **First deployment**: See `DEPLOYMENT.md` for detailed instructions
+- **Updating site**: See `UPDATE_SITE.md` for update guide
+- **hPanel specific**: See `HPANEL_DEPLOYMENT.md` for hPanel steps
 

@@ -1,9 +1,9 @@
-# Nexus Crux - Robots.txt
+# Allow all crawlers
 User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://nexuscrux.com/sitemap.xml
+Sitemap: https://nexuscrux.io/sitemap.xml
 
 # Crawl-delay (optional, adjust as needed)
 Crawl-delay: 1

@@ -1,0 +1,20 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Connection lines (Nexus) -->
+  <line x1="60" y1="60" x2="60" y2="20" stroke="#2AD1C8" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="60" x2="94.64" y2="35" stroke="#2AD1C8" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="60" x2="94.64" y2="85" stroke="#2AD1C8" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="60" x2="60" y2="100" stroke="#2AD1C8" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="60" x2="25.36" y2="85" stroke="#2AD1C8" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="60" x2="25.36" y2="35" stroke="#2AD1C8" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Core node (Crux) -->
+  <circle cx="60" cy="60" r="20" fill="#2AD1C8"/>
+  
+  <!-- Orbiting nodes (Brands/Contractors) - 6 nodes -->
+  <circle cx="60" cy="20" r="10" fill="#A6F750"/>
+  <circle cx="94.64" cy="35" r="10" fill="#A6F750"/>
+  <circle cx="94.64" cy="85" r="10" fill="#A6F750"/>
+  <circle cx="60" cy="100" r="10" fill="#A6F750"/>
+  <circle cx="25.36" cy="85" r="10" fill="#A6F750"/>
+  <circle cx="25.36" cy="35" r="10" fill="#A6F750"/>
+</svg>

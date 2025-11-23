@@ -11,17 +11,17 @@ export const socialMediaLinks = {
   youtube: 'https://youtube.com/@nexuscrux',
   instagram: 'https://instagram.com/nexuscrux',
   tiktok: 'https://tiktok.com/@nexuscrux',
-  email: 'hello@nexuscrux.com'
+  email: 'hello@nexuscrux.io'
 };
 
 /**
  * Contact Email Addresses
  */
 export const contactEmails = {
-  general: 'hello@nexuscrux.com',
-  support: 'support@nexuscrux.com',
-  sales: 'sales@nexuscrux.com',
-  privacy: 'privacy@nexuscrux.com',
-  dpo: 'dpo@nexuscrux.com',
-  legal: 'legal@nexuscrux.com'
+  general: 'hello@nexuscrux.io',
+  support: 'support@nexuscrux.io',
+  sales: 'sales@nexuscrux.io',
+  privacy: 'privacy@nexuscrux.io',
+  dpo: 'dpo@nexuscrux.io',
+  legal: 'legal@nexuscrux.io'
 };

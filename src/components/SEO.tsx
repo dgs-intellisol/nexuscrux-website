@@ -20,7 +20,7 @@ export function SEO({
   structuredData,
 }: SEOProps) {
   const fullTitle = `${title} | Nexus Crux`;
-  const url = canonicalUrl || `https://nexuscrux.com${window.location.pathname}`;
+  const url = canonicalUrl || `https://nexuscrux.io${window.location.pathname}`;
 
   useEffect(() => {
     // Update title
@@ -40,12 +40,34 @@ export function SEO({
       element.setAttribute('content', content);
     };
 
+    // Update or create link tags
+    const updateLinkTag = (rel: string, href: string, type?: string, sizes?: string) => {
+      let element = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
+      
+      if (!element) {
+        element = document.createElement('link');
+        element.rel = rel;
+        document.head.appendChild(element);
+      }
+      
+      element.href = href;
+      if (type) element.type = type;
+      if (sizes) element.setAttribute('sizes', sizes);
+    };
+
+    // Favicons
+    updateLinkTag('icon', '/logos/nexus-crux-compact.svg', 'image/svg+xml');
+    updateLinkTag('apple-touch-icon', '/logos/nexus-crux-compact.svg');
+    updateLinkTag('icon', '/logos/nexus-crux-compact.svg', 'image/svg+xml', '32x32');
+    updateLinkTag('shortcut icon', '/logos/nexus-crux-compact.svg', 'image/svg+xml');
+
     // Standard meta tags
     updateMetaTag('description', description);
     updateMetaTag('keywords', keywords);
     updateMetaTag('author', 'Nexus Crux');
     updateMetaTag('robots', 'index, follow');
     updateMetaTag('viewport', 'width=device-width, initial-scale=1.0');
+    updateMetaTag('theme-color', '#2AD1C8');
 
     // Open Graph tags
     updateMetaTag('og:title', fullTitle, true);

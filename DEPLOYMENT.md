@@ -39,14 +39,22 @@ cp .htaccess build/
 
 You have several options to upload files:
 
-### Option A: Using cPanel File Manager
+### Option A: Using hPanel File Manager (Recommended)
 
-1. Log in to your Hostinger account
-2. Go to **hPanel** (or cPanel)
-3. Navigate to **File Manager**
-4. Open the `public_html` folder (or the folder where your domain points)
-5. Delete any existing files (or backup them first)
-6. Upload all files from the `build` folder
+**📖 For detailed step-by-step instructions, see [HPANEL_DEPLOYMENT.md](./HPANEL_DEPLOYMENT.md)**
+
+Quick steps:
+1. Log in to your Hostinger account → Click "Manage"
+2. In **hPanel**, go to **Files** → **File Manager**
+3. Navigate to `public_html` folder (or your domain's folder)
+4. Delete any existing files (backup first if needed)
+5. Click **Upload** button
+6. Select all files from your local `build` folder:
+   - `index.html`
+   - `.htaccess` (⚠️ **CRITICAL** - must be included!)
+   - `assets/` folder (entire folder)
+7. Wait for upload to complete
+8. Verify files are in the correct location
 
 ### Option B: Using FTP/SFTP Client
 
@@ -149,12 +157,17 @@ public_html/
 
 ## Updating Your Site
 
-When you make changes:
+**📖 For detailed update instructions, see [UPDATE_SITE.md](./UPDATE_SITE.md)**
 
+Quick update process:
 1. Make your code changes locally
 2. Run `npm run build` again
-3. Upload the new `build` folder contents to replace old files
-4. Clear browser cache or do a hard refresh (Ctrl+F5)
+3. In hPanel File Manager:
+   - Delete old files from your domain folder
+   - Upload new files from `build` folder (including `.htaccess`)
+4. Clear browser cache (Ctrl+F5) and test
+
+See [UPDATE_SITE.md](./UPDATE_SITE.md) for complete step-by-step update guide.
 
 ## Automated Deployment (Optional)
 

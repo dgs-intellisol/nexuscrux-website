@@ -124,7 +124,7 @@ export function DocumentationPage() {
             >
               <h3 className="text-[#0A1A2F] mb-4">Base URL</h3>
               <div className="bg-[#0A1A2F] text-[#A6F750] p-4 rounded-lg text-sm font-mono mb-4">
-                https://api.nexuscrux.com/v1
+                https://api.nexuscrux.io/v1
               </div>
               <h3 className="text-[#0A1A2F] mb-4">Authentication</h3>
               <div className="bg-[#0A1A2F] text-white p-4 rounded-lg text-sm font-mono mb-2">
@@ -143,10 +143,10 @@ export function DocumentationPage() {
             >
               <h3 className="text-[#0A1A2F] mb-4">Example Request</h3>
               <div className="bg-[#0A1A2F] text-white p-4 rounded-lg text-sm font-mono overflow-x-auto">
-                <div className="text-[#2AD1C8]">curl https://api.nexuscrux.com/v1/jobs \</div>
+                <div className="text-[#2AD1C8]">curl https://api.nexuscrux.io/v1/jobs \</div>
                 <div className="text-[#A6F750] ml-4">-H "Authorization: Bearer YOUR_API_KEY" \</div>
                 <div className="text-[#A6F750] ml-4">-H "Content-Type: application/json" \</div>
-                <div className="text-[#A6F750] ml-4">-d {'\'{"status": "pending"}\''}</div>
+                <div className="text-[#A6F750] ml-4">-d {'\'{\"status\": \"pending\"}\''}</div>
               </div>
             </motion.div>
           </div>

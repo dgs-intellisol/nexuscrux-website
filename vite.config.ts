@@ -2,28 +2,14 @@
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react-swc';
   import path from 'path';
-  import { copyFileSync } from 'fs';
 
   export default defineConfig({
-    plugins: [
-      react(),
-      // Plugin to copy .htaccess to build folder after build
-      {
-        name: 'copy-htaccess',
-        closeBundle() {
-          try {
-            copyFileSync(path.resolve(__dirname, '.htaccess'), path.resolve(__dirname, 'build/.htaccess'));
-            console.log('✓ .htaccess copied to build folder');
-          } catch (error) {
-            console.warn('⚠ Could not copy .htaccess file:', error);
-          }
-        },
-      },
-    ],
+    plugins: [react()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
         'vaul@1.1.2': 'vaul',
+        'stripe@14.10.0': 'stripe',
         'sonner@2.0.3': 'sonner',
         'recharts@2.15.2': 'recharts',
         'react-resizable-panels@2.1.7': 'react-resizable-panels',
@@ -61,6 +47,7 @@
         '@radix-ui/react-aspect-ratio@1.1.2': '@radix-ui/react-aspect-ratio',
         '@radix-ui/react-alert-dialog@1.1.6': '@radix-ui/react-alert-dialog',
         '@radix-ui/react-accordion@1.2.3': '@radix-ui/react-accordion',
+        '@jsr/supabase__supabase-js@2.49.8': '@jsr/supabase__supabase-js',
         '@': path.resolve(__dirname, './src'),
       },
     },
