@@ -1,0 +1,225 @@
+// ============================================
+// COMPLETE EDGE FUNCTION CODE FOR SUPABASE
+// ============================================
+// Copy this ENTIRE file to Supabase Dashboard
+// Function name: server
+// ============================================
+
+import { Hono } from "npm:hono";
+import { cors } from "npm:hono/cors";
+import { logger } from "npm:hono/logger";
+import Stripe from 'npm:stripe@14.10.0';
+
+const app = new Hono();
+
+// Enable logger
+app.use('*', logger(console.log));
+
+// Enable CORS for all routes and methods
+app.use(
+  "/*",
+  cors({
+    origin: "*",
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
+  }),
+);
+
+// Initialize Stripe with secret key
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2024-11-20.acacia',
+});
+
+// Health check endpoint
+app.get("/make-server-fa18f4aa/health", (c) => {
+  return c.json({ status: "ok" });
+});
+
+// Helper function to map plan names to Stripe Price IDs
+function getStripePriceId(planName: string, billingCycle: string): string | null {
+  const priceMap: Record<string, { monthly: string; annual: string }> = {
+    starter: {
+      monthly: Deno.env.get('STRIPE_PRICE_STARTER_MONTHLY') || 'price_starter_monthly',
+      annual: Deno.env.get('STRIPE_PRICE_STARTER_ANNUAL') || 'price_starter_annual',
+    },
+    growth: {
+      monthly: Deno.env.get('STRIPE_PRICE_GROWTH_MONTHLY') || 'price_growth_monthly',
+      annual: Deno.env.get('STRIPE_PRICE_GROWTH_ANNUAL') || 'price_growth_annual',
+    },
+    scale: {
+      monthly: Deno.env.get('STRIPE_PRICE_SCALE_MONTHLY') || 'price_scale_monthly',
+      annual: Deno.env.get('STRIPE_PRICE_SCALE_ANNUAL') || 'price_scale_annual',
+    },
+  };
+
+  const plan = planName.toLowerCase();
+  const cycle = billingCycle.toLowerCase();
+
+  return priceMap[plan]?.[cycle as 'monthly' | 'annual'] || null;
+}
+
+// Create subscription endpoint
+app.post('/make-server-fa18f4aa/api/subscriptions/create', async (c) => {
+  try {
+    const body = await c.req.json();
+    const {
+      planName,
+      billingCycle,
+      hasTrial,
+      customerInfo,
+      paymentMethodId,
+    } = body;
+
+    // Validate required fields
+    if (!planName || !billingCycle || !customerInfo || !paymentMethodId) {
+      return c.json(
+        { success: false, error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Get Stripe Price ID based on plan and billing cycle
+    const priceId = getStripePriceId(planName, billingCycle);
+    if (!priceId) {
+      return c.json(
+        { success: false, error: 'Invalid plan or billing cycle' },
+        { status: 400 }
+      );
+    }
+
+    // Create or retrieve Stripe customer
+    const customer = await stripe.customers.create({
+      email: customerInfo.email,
+      name: customerInfo.name,
+      phone: customerInfo.phone,
+      metadata: {
+        company: customerInfo.company,
+        plan: planName,
+        billingCycle: billingCycle,
+        additionalInfo: customerInfo.additionalInfo || '',
+      },
+    });
+
+    // Attach payment method to customer
+    await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customer.id,
+    });
+
+    // Set as default payment method
+    await stripe.customers.update(customer.id, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+
+    // Create subscription
+    const subscriptionParams: Stripe.SubscriptionCreateParams = {
+      customer: customer.id,
+      items: [{ price: priceId }],
+      payment_settings: {
+        payment_method_types: ['card'],
+        save_default_payment_method: 'on_subscription',
+      },
+      expand: ['latest_invoice.payment_intent'],
+    };
+
+    // Add trial period if requested (14 days)
+    if (hasTrial) {
+      subscriptionParams.trial_period_days = 14;
+    }
+
+    const subscription = await stripe.subscriptions.create(subscriptionParams);
+
+    // Log subscription creation
+    console.log(`✅ Subscription created: ${subscription.id} for ${customerInfo.email}`);
+    console.log(`   Plan: ${planName} (${billingCycle})`);
+    console.log(`   Trial: ${hasTrial ? '14 days' : 'No trial'}`);
+    console.log(`   Customer: ${customer.id}`);
+
+    return c.json({
+      success: true,
+      subscriptionId: subscription.id,
+      customerId: customer.id,
+      status: subscription.status,
+      trialEnd: subscription.trial_end,
+      message: hasTrial
+        ? 'Subscription created with 14-day free trial'
+        : 'Subscription created and payment processed',
+    });
+  } catch (error) {
+    console.error('❌ Error creating subscription:', error);
+    
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      },
+      { status: 500 }
+    );
+  }
+});
+
+// Get subscription status
+app.get('/make-server-fa18f4aa/api/subscriptions/status/:subscriptionId', async (c) => {
+  try {
+    const subscriptionId = c.req.param('subscriptionId');
+    
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    
+    return c.json({
+      success: true,
+      subscription: {
+        id: subscription.id,
+        status: subscription.status,
+        currentPeriodEnd: subscription.current_period_end,
+        trialEnd: subscription.trial_end,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      },
+    });
+  } catch (error) {
+    console.error('❌ Error retrieving subscription:', error);
+    
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      },
+      { status: 500 }
+    );
+  }
+});
+
+// Cancel subscription
+app.post('/make-server-fa18f4aa/api/subscriptions/cancel/:subscriptionId', async (c) => {
+  try {
+    const subscriptionId = c.req.param('subscriptionId');
+    
+    // Cancel at period end (don't cancel immediately)
+    const subscription = await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    });
+    
+    console.log(`✅ Subscription ${subscriptionId} will cancel at period end`);
+    
+    return c.json({
+      success: true,
+      message: 'Subscription will cancel at the end of the current period',
+      cancelAt: subscription.cancel_at,
+    });
+  } catch (error) {
+    console.error('❌ Error cancelling subscription:', error);
+    
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      },
+      { status: 500 }
+    );
+  }
+});
+
+Deno.serve(app.fetch);
+
