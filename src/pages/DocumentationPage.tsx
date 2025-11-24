@@ -155,13 +155,18 @@ export function DocumentationPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="block bg-white border border-[#0A1A2F]/10 rounded-2xl p-6 hover:border-[#2AD1C8]/50 hover:shadow-lg transition-all"
+                className="group block relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mb-4">
-                  <item.icon className="w-6 h-6 text-white" />
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+                
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300">
+                    <item.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-[#0A1A2F] mb-2">{item.title}</h3>
+                  <p className="text-[#0A1A2F]/60 text-sm">{item.description}</p>
                 </div>
-                <h3 className="text-[#0A1A2F] mb-2">{item.title}</h3>
-                <p className="text-[#0A1A2F]/60 text-sm">{item.description}</p>
               </motion.a>
             ))}
           </div>

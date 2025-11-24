@@ -197,13 +197,18 @@ export function FeaturesPage() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: featureIndex * 0.1 }}
-                      className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-6 hover:border-[#2AD1C8]/50 hover:shadow-lg transition-all"
+                      className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
                     >
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8]/10 to-[#A6F750]/10 rounded-xl flex items-center justify-center mb-4">
-                        <feature.icon className="w-6 h-6 text-[#0A1A2F]" />
+                      {/* Subtle gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+                      
+                      <div className="relative z-10">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300">
+                          <feature.icon className="w-6 h-6 text-white" />
+                        </div>
+                        <h3 className="text-[#0A1A2F] mb-2">{feature.name}</h3>
+                        <p className="text-[#0A1A2F]/60 text-sm">{feature.description}</p>
                       </div>
-                      <h3 className="text-[#0A1A2F] mb-2">{feature.name}</h3>
-                      <p className="text-[#0A1A2F]/60 text-sm">{feature.description}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -234,10 +239,30 @@ export function FeaturesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { metric: '99.99%', label: 'Uptime SLA' },
-              { metric: '<50ms', label: 'API Response' },
-              { metric: '10M+', label: 'Jobs Processed' },
-              { metric: '24/7', label: 'Support' },
+              { 
+                metric: '99.99%', 
+                label: 'Uptime SLA',
+                gradient: 'from-[#2AD1C8] to-[#2AD1C8]/70',
+                bgGradient: 'from-[#2AD1C8]/5 to-transparent'
+              },
+              { 
+                metric: '<50ms', 
+                label: 'API Response',
+                gradient: 'from-[#A6F750] to-[#A6F750]/70',
+                bgGradient: 'from-[#A6F750]/5 to-transparent'
+              },
+              { 
+                metric: '10M+', 
+                label: 'Jobs Processed',
+                gradient: 'from-[#2AD1C8] to-[#A6F750]',
+                bgGradient: 'from-[#2AD1C8]/5 via-[#A6F750]/5 to-transparent'
+              },
+              { 
+                metric: '24/7', 
+                label: 'Support',
+                gradient: 'from-[#0A1A2F] to-[#2AD1C8]',
+                bgGradient: 'from-[#0A1A2F]/5 to-[#2AD1C8]/5'
+              },
             ].map((item, index) => (
               <motion.div
                 key={item.label}
@@ -245,10 +270,21 @@ export function FeaturesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center p-8 bg-white border border-[#0A1A2F]/10 rounded-2xl"
+                className="group relative text-center p-8 bg-white border border-[#0A1A2F]/10 rounded-2xl hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                <div className="text-4xl text-[#0A1A2F] mb-2">{item.metric}</div>
-                <div className="text-[#0A1A2F]/60">{item.label}</div>
+                {/* Background gradient on hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                
+                {/* Content */}
+                <div className="relative z-10">
+                  <div className={`inline-block px-4 py-2 bg-gradient-to-br ${item.gradient} rounded-xl mb-3 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className="text-4xl text-white">{item.metric}</div>
+                  </div>
+                  <div className="text-[#0A1A2F]/60 mt-2">{item.label}</div>
+                </div>
+
+                {/* Border accent on hover */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none`} />
               </motion.div>
             ))}
           </div>

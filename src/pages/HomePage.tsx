@@ -47,19 +47,22 @@ export function HomePage() {
     {
       name: 'Sarah Chen',
       role: 'COO, ServicePro',
-      content: 'Nexus Crux transformed how we manage our multi-brand operations. The federated approach is genius.',
+      company: 'ServicePro',
+      quote: 'Nexus Crux transformed how we manage our multi-brand operations. The federated approach is genius.',
       rating: 5,
     },
     {
       name: 'Marcus Wright',
       role: 'Operations Director, HomeHub',
-      content: 'The AI routing and contractor pooling saved us 40% in operational costs within the first quarter.',
+      company: 'HomeHub',
+      quote: 'The AI routing and contractor pooling saved us 40% in operational costs within the first quarter.',
       rating: 5,
     },
     {
       name: 'Lisa Rodriguez',
       role: 'CEO, EcoClean Network',
-      content: 'Their compliance automation and eco-tracking gave us a competitive edge in sustainability.',
+      company: 'EcoClean Network',
+      quote: 'Their compliance automation and eco-tracking gave us a competitive edge in sustainability.',
       rating: 5,
     },
   ];
@@ -301,22 +304,28 @@ export function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
               <motion.div
-                key={testimonial.name}
+                key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-6"
+                className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-[#A6F750] text-[#A6F750]" />
-                  ))}
-                </div>
-                <p className="text-[#0A1A2F]/80 mb-4">"{testimonial.content}"</p>
-                <div>
-                  <div className="text-[#0A1A2F]">{testimonial.name}</div>
-                  <div className="text-sm text-[#0A1A2F]/60">{testimonial.role}</div>
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-[#A6F750] text-[#A6F750]" />
+                    ))}
+                  </div>
+                  <p className="text-[#0A1A2F]/80 mb-4 italic">&ldquo;{testimonial.quote}&rdquo;</p>
+                  <div>
+                    <div className="text-[#0A1A2F]">{testimonial.name}</div>
+                    <div className="text-[#0A1A2F]/60 text-sm">{testimonial.role}</div>
+                    <div className="text-[#0A1A2F]/60 text-sm">{testimonial.company}</div>
+                  </div>
                 </div>
               </motion.div>
             ))}

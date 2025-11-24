@@ -70,6 +70,11 @@ export function Footer() {
                   For Enterprises
                 </Link>
               </li>
+              <li>
+                <Link to="/drivers" className="text-sm text-white/60 hover:text-white transition-colors">
+                  Driver Network
+                </Link>
+              </li>
             </ul>
           </div>
 

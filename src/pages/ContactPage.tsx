@@ -404,26 +404,23 @@ export function ContactPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-6 text-center"
+              className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 text-center hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Mail className="w-6 h-6 text-white" />
+              {/* Subtle gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+              
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-[#0A1A2F] mb-3">Email</h3>
+                <a
+                  href={`mailto:${contactEmails.hello}`}
+                  className="text-[#2AD1C8] hover:text-[#2AD1C8]/80 transition-colors inline-block"
+                >
+                  {contactEmails.hello}
+                </a>
               </div>
-              <h3 className="text-[#0A1A2F] mb-2">Email</h3>
-              <p className="text-[#0A1A2F]/60 text-sm mb-1">General Inquiries</p>
-              <a
-                href={`mailto:${contactEmails.general}`}
-                className="text-[#2AD1C8] hover:text-[#2AD1C8]/80 transition-colors"
-              >
-                {contactEmails.general}
-              </a>
-              <p className="text-[#0A1A2F]/60 text-sm mt-3 mb-1">Sales</p>
-              <a
-                href={`mailto:${contactEmails.sales}`}
-                className="text-[#2AD1C8] hover:text-[#2AD1C8]/80 transition-colors"
-              >
-                {contactEmails.sales}
-              </a>
             </motion.div>
 
             <motion.div
@@ -431,20 +428,25 @@ export function ContactPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-6 text-center"
+              className="group relative bg-gradient-to-br from-white via-white to-[#A6F750]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 text-center hover:border-[#A6F750]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Phone className="w-6 h-6 text-white" />
+              {/* Subtle gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#A6F750]/0 to-[#2AD1C8]/0 group-hover:from-[#A6F750]/5 group-hover:to-[#2AD1C8]/5 transition-all duration-500 rounded-2xl" />
+              
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#A6F750] to-[#2AD1C8] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#A6F750]/20 group-hover:scale-110 transition-transform duration-300">
+                  <Phone className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-[#0A1A2F] mb-2">Phone</h3>
+                <p className="text-[#0A1A2F]/60 text-sm mb-2">Sales & Support</p>
+                <a
+                  href="tel:+442079460958"
+                  className="text-[#2AD1C8] hover:text-[#2AD1C8]/80 transition-colors inline-block"
+                >
+                  +44 20 7946 0958
+                </a>
+                <p className="text-[#0A1A2F]/60 text-sm mt-3">Mon-Fri, 9am-6pm GMT</p>
               </div>
-              <h3 className="text-[#0A1A2F] mb-2">Phone</h3>
-              <p className="text-[#0A1A2F]/60 text-sm mb-1">Sales & Support</p>
-              <a
-                href="tel:+442079460958"
-                className="text-[#2AD1C8] hover:text-[#2AD1C8]/80 transition-colors"
-              >
-                +44 20 7946 0958
-              </a>
-              <p className="text-[#0A1A2F]/60 text-sm mt-3">Mon-Fri, 9am-6pm GMT</p>
             </motion.div>
 
             <motion.div
@@ -452,19 +454,24 @@ export function ContactPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-6 text-center"
+              className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 text-center hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-6 h-6 text-white" />
+              {/* Subtle gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+              
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300">
+                  <MapPin className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-[#0A1A2F] mb-3">Office</h3>
+                <p className="text-[#0A1A2F]/60 text-sm leading-relaxed">
+                  25 Cabot Square
+                  <br />
+                  Canary Wharf, London E14 4QZ
+                  <br />
+                  United Kingdom
+                </p>
               </div>
-              <h3 className="text-[#0A1A2F] mb-2">Office</h3>
-              <p className="text-[#0A1A2F]/60 text-sm">
-                25 Cabot Square
-                <br />
-                Canary Wharf, London E14 4QZ
-                <br />
-                United Kingdom
-              </p>
             </motion.div>
           </div>
         </div>

@@ -14,6 +14,7 @@ import { DocumentationPage } from './pages/DocumentationPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { SandboxRequestPage } from './pages/SandboxRequestPage';
+import { DriversPage } from './pages/DriversPage';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { TermsOfService } from './pages/TermsOfService';
 import { GDPR } from './pages/GDPR';
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/sandbox" element={<SandboxRequestPage />} />
+          <Route path="/drivers" element={<DriversPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/gdpr-compliance" element={<GDPR />} />

@@ -212,13 +212,18 @@ export function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-6 text-center"
+                className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 text-center hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-6 h-6 text-white" />
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+                
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300">
+                    <item.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-[#0A1A2F] mb-2">{item.title}</h3>
+                  <p className="text-[#0A1A2F]/60">{item.description}</p>
                 </div>
-                <h3 className="text-[#0A1A2F] mb-2">{item.title}</h3>
-                <p className="text-[#0A1A2F]/60 text-sm">{item.description}</p>
               </motion.div>
             ))}
           </div>
@@ -310,18 +315,30 @@ export function AboutPage() {
               {
                 value: 'Collaboration',
                 description: 'We build platforms that enable cooperation, not competition.',
+                gradient: 'from-[#2AD1C8] to-[#2AD1C8]/70',
+                bgGradient: 'from-[#2AD1C8]/10 via-[#2AD1C8]/5 to-transparent',
+                icon: '🤝',
               },
               {
                 value: 'Intelligence',
                 description: 'AI should augment human decision-making, not replace it.',
+                gradient: 'from-[#A6F750] to-[#A6F750]/70',
+                bgGradient: 'from-[#A6F750]/10 via-[#A6F750]/5 to-transparent',
+                icon: '🧠',
               },
               {
                 value: 'Sustainability',
                 description: 'Environmental impact is a first-class consideration.',
+                gradient: 'from-[#A6F750] to-[#2AD1C8]',
+                bgGradient: 'from-[#A6F750]/10 via-[#2AD1C8]/5 to-transparent',
+                icon: '🌱',
               },
               {
                 value: 'Transparency',
                 description: 'Clear pricing, explainable AI, and open communication.',
+                gradient: 'from-[#2AD1C8] to-[#0A1A2F]/80',
+                bgGradient: 'from-[#2AD1C8]/10 via-white to-transparent',
+                icon: '💎',
               },
             ].map((item, index) => (
               <motion.div
@@ -330,10 +347,23 @@ export function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center p-6 bg-gray-50 border border-[#0A1A2F]/10 rounded-2xl"
+                className="group relative text-center p-6 bg-white border border-[#0A1A2F]/10 rounded-2xl hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                <h3 className="text-[#0A1A2F] mb-2">{item.value}</h3>
-                <p className="text-sm text-[#0A1A2F]/60">{item.description}</p>
+                {/* Unique gradient background for each value */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-50 group-hover:opacity-100 transition-opacity duration-500`} />
+                
+                {/* Content */}
+                <div className="relative z-10">
+                  {/* Icon with gradient accent */}
+                  <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br ${item.gradient} rounded-xl mb-4 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300`}>
+                    <span className="text-2xl">{item.icon}</span>
+                  </div>
+                  <h3 className="text-[#0A1A2F] mb-2">{item.value}</h3>
+                  <p className="text-sm text-[#0A1A2F]/60">{item.description}</p>
+                </div>
+
+                {/* Subtle border accent on hover */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none`} />
               </motion.div>
             ))}
           </div>

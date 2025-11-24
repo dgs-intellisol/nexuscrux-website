@@ -86,6 +86,14 @@ export function Navigation() {
               Pricing
             </Link>
             <Link
+              to="/drivers"
+              className={`text-sm transition-colors ${
+                isActive('/drivers') ? 'text-[#A6F750]' : 'text-white/80 hover:text-white'
+              }`}
+            >
+              Drivers
+            </Link>
+            <Link
               to="/documentation"
               className={`text-sm transition-colors ${
                 isActive('/documentation') ? 'text-[#A6F750]' : 'text-white/80 hover:text-white'
@@ -192,6 +200,13 @@ export function Navigation() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Pricing
+              </Link>
+              <Link
+                to="/drivers"
+                className="block text-white/80 hover:text-white transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Drivers
               </Link>
               <Link
                 to="/documentation"

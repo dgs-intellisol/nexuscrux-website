@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 interface BrandCardProps {
   children: ReactNode;
-  variant?: 'elevated' | 'bordered' | 'flat';
+  variant?: 'elevated' | 'bordered' | 'flat' | 'dark';
   padding?: 'sm' | 'md' | 'lg';
   hoverable?: boolean;
   animated?: boolean;
@@ -27,9 +27,10 @@ export function BrandCard({
   };
 
   const variantClasses = {
-    elevated: 'bg-white border border-[#0A1A2F]/10',
-    bordered: 'bg-white border-2 border-[#2AD1C8]/20',
-    flat: 'bg-[#DDE2E8]/30',
+    elevated: 'bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10',
+    bordered: 'bg-gradient-to-br from-white to-white border-2 border-[#2AD1C8]/20',
+    flat: 'bg-gradient-to-br from-[#DDE2E8]/30 to-[#DDE2E8]/10',
+    dark: 'bg-white/5 border border-white/10 backdrop-blur-sm',
   };
 
   const baseClasses = `rounded-2xl ${paddingClasses[padding]} ${variantClasses[variant]} ${onClick ? 'cursor-pointer' : ''} ${className}`;

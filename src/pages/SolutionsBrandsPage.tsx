@@ -125,13 +125,18 @@ export function SolutionsBrandsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white border border-[#0A1A2F]/10 rounded-2xl p-6 hover:border-[#2AD1C8]/50 hover:shadow-lg transition-all"
+                className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-2xl p-6 hover:border-[#2AD1C8]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-white" />
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+                
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#2AD1C8] to-[#A6F750] rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-[#2AD1C8]/20 group-hover:scale-110 transition-transform duration-300">
+                    <feature.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-[#0A1A2F] mb-2">{feature.title}</h3>
+                  <p className="text-[#0A1A2F]/60">{feature.description}</p>
                 </div>
-                <h3 className="text-[#0A1A2F] mb-2">{feature.title}</h3>
-                <p className="text-[#0A1A2F]/60">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -217,27 +222,40 @@ export function SolutionsBrandsPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl p-8 border border-[#0A1A2F]/10"
+              className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 rounded-2xl p-8 border border-[#0A1A2F]/10 hover:border-[#2AD1C8]/30 hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
-              <Shield className="w-12 h-12 text-[#2AD1C8] mb-4" />
-              <h3 className="text-[#0A1A2F] mb-3">Compliance Automation</h3>
-              <p className="text-[#0A1A2F]/60 mb-4">
-                Stay compliant effortlessly with automated WTN tracking, regulatory reporting, and industry-specific requirements.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-[#0A1A2F]/80">
-                  <CheckCircle className="w-4 h-4 text-[#2AD1C8]" />
-                  Automated waste tracking notes (WTN)
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[#0A1A2F]/80">
-                  <CheckCircle className="w-4 h-4 text-[#2AD1C8]" />
-                  Contractor licensing verification
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[#0A1A2F]/80">
-                  <CheckCircle className="w-4 h-4 text-[#2AD1C8]" />
-                  GDPR & data protection compliance
-                </li>
-              </ul>
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#2AD1C8]/0 group-hover:from-[#2AD1C8]/10 group-hover:to-[#2AD1C8]/5 transition-all duration-500 rounded-2xl" />
+              
+              <div className="relative z-10">
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-[#2AD1C8] to-[#2AD1C8]/70 rounded-xl mb-4 shadow-lg shadow-[#2AD1C8]/30 group-hover:scale-110 transition-transform duration-300">
+                  <Shield className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-[#0A1A2F] mb-3">Compliance Automation</h3>
+                <p className="text-[#0A1A2F]/60 mb-6">
+                  Stay compliant effortlessly with automated WTN tracking, regulatory reporting, and industry-specific requirements.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3 text-sm text-[#0A1A2F]/80">
+                    <div className="flex-shrink-0 w-5 h-5 bg-[#2AD1C8]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-3.5 h-3.5 text-[#2AD1C8]" />
+                    </div>
+                    Automated waste tracking notes (WTN)
+                  </li>
+                  <li className="flex items-center gap-3 text-sm text-[#0A1A2F]/80">
+                    <div className="flex-shrink-0 w-5 h-5 bg-[#2AD1C8]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-3.5 h-3.5 text-[#2AD1C8]" />
+                    </div>
+                    Contractor licensing verification
+                  </li>
+                  <li className="flex items-center gap-3 text-sm text-[#0A1A2F]/80">
+                    <div className="flex-shrink-0 w-5 h-5 bg-[#2AD1C8]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-3.5 h-3.5 text-[#2AD1C8]" />
+                    </div>
+                    GDPR & data protection compliance
+                  </li>
+                </ul>
+              </div>
             </motion.div>
 
             <motion.div
@@ -245,27 +263,40 @@ export function SolutionsBrandsPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 border border-[#0A1A2F]/10"
+              className="group relative bg-gradient-to-br from-white via-white to-[#A6F750]/5 rounded-2xl p-8 border border-[#0A1A2F]/10 hover:border-[#A6F750]/30 hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
-              <BarChart3 className="w-12 h-12 text-[#A6F750] mb-4" />
-              <h3 className="text-[#0A1A2F] mb-3">Eco-Impact Analytics</h3>
-              <p className="text-[#0A1A2F]/60 mb-4">
-                Track and showcase your sustainability impact with comprehensive eco-analytics and carbon reporting.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-[#0A1A2F]/80">
-                  <CheckCircle className="w-4 h-4 text-[#A6F750]" />
-                  Carbon footprint tracking
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[#0A1A2F]/80">
-                  <CheckCircle className="w-4 h-4 text-[#A6F750]" />
-                  Eco-credit system integration
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[#0A1A2F]/80">
-                  <CheckCircle className="w-4 h-4 text-[#A6F750]" />
-                  Sustainability reporting dashboards
-                </li>
-              </ul>
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#A6F750]/0 to-[#A6F750]/0 group-hover:from-[#A6F750]/10 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-2xl" />
+              
+              <div className="relative z-10">
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-[#A6F750] to-[#A6F750]/70 rounded-xl mb-4 shadow-lg shadow-[#A6F750]/30 group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-[#0A1A2F] mb-3">Eco-Impact Analytics</h3>
+                <p className="text-[#0A1A2F]/60 mb-6">
+                  Track and showcase your sustainability impact with comprehensive eco-analytics and carbon reporting.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3 text-sm text-[#0A1A2F]/80">
+                    <div className="flex-shrink-0 w-5 h-5 bg-[#A6F750]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-3.5 h-3.5 text-[#A6F750]" />
+                    </div>
+                    Carbon footprint tracking
+                  </li>
+                  <li className="flex items-center gap-3 text-sm text-[#0A1A2F]/80">
+                    <div className="flex-shrink-0 w-5 h-5 bg-[#A6F750]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-3.5 h-3.5 text-[#A6F750]" />
+                    </div>
+                    Eco-credit system integration
+                  </li>
+                  <li className="flex items-center gap-3 text-sm text-[#0A1A2F]/80">
+                    <div className="flex-shrink-0 w-5 h-5 bg-[#A6F750]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-3.5 h-3.5 text-[#A6F750]" />
+                    </div>
+                    Sustainability reporting dashboards
+                  </li>
+                </ul>
+              </div>
             </motion.div>
           </div>
         </div>

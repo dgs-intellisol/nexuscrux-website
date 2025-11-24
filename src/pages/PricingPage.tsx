@@ -403,15 +403,20 @@ export function PricingPage() {
               },
             ].map((faq, index) => (
               <motion.div
-                key={faq.q}
+                key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-white border border-[#0A1A2F]/10 rounded-xl p-6"
+                className="group relative bg-gradient-to-br from-white via-white to-[#2AD1C8]/5 border border-[#0A1A2F]/10 rounded-xl p-6 hover:border-[#2AD1C8]/30 hover:shadow-lg transition-all duration-300 overflow-hidden"
               >
-                <h3 className="text-[#0A1A2F] mb-2">{faq.q}</h3>
-                <p className="text-[#0A1A2F]/60">{faq.a}</p>
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2AD1C8]/0 to-[#A6F750]/0 group-hover:from-[#2AD1C8]/5 group-hover:to-[#A6F750]/5 transition-all duration-500 rounded-xl" />
+                
+                <div className="relative z-10">
+                  <h3 className="text-[#0A1A2F] mb-2">{faq.q}</h3>
+                  <p className="text-[#0A1A2F]/60">{faq.a}</p>
+                </div>
               </motion.div>
             ))}
           </div>
